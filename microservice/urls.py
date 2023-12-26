@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('micro1/', include('micro1.urls')),
     path('micro2/', include('micro2.urls')),
+    path('micro3/', include('micro3.urls')),
 ]

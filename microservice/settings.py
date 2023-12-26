@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'micro1.apps.Micro1Config',
     'micro2.apps.Micro2Config',
+    'micro3.apps.Micro3Config',
     'rest_framework',
 ]
 

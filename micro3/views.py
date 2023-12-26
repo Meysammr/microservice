@@ -1,39 +1,41 @@
-# mymicroservice/views.py
+# micro3/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import F, ExpressionWrapper, fields
+from .serializers import FormulaInputSerializer, RawSerializer
 from micro1.models import Raw
-from micro2.models import Aggregations
-
-from .models import CalculateData
-from .serializers import CalculateDataSerializer, OutputSerializer
 
 
 class FormulaCalculation(APIView):
 
     def post(self, request, *args, **kwargs):
-        serializer = CalculateDataSerializer(data=request.data)
+        serializer = FormulaInputSerializer(data=request.data)
         if serializer.is_valid():
             layer = serializer.validated_data['layer']
-            print(layer)
-            elements = serializer.validated_data.get('elements', '')
-            print(elements)
-            kpi = serializer.validated_data['kpi']
-            print(kpi)
+            elements = serializer.validated_data.get('elements', [])
+            kpi_formula = serializer.validated_data['kpi']
 
-            if Aggregations.objects.filter(raw_data__city=elements, raw_data__province=layer, kpi=kpi).exists():
-                data_from_db = Aggregations.objects.filter(raw_data__city__in=elements, raw_data__province=layer,
-                                                           kpi=kpi)
+            # Prepare dictionary for kpi variables
+            kpi_variables = {f'kpi_{i}': F(f'kpi_{i}') for i in range(1, 21)}
 
-                formula_data_list = []
-                for entry in data_from_db:
-                    element = f"{entry.raw_data.city} - {entry.raw_data.province}"
-                    kpi_value = entry.value
-                    formula_data = CalculateData(layer=layer, element=element, kpi_value=kpi_value)
-                    formula_data_list.append(formula_data)
+            # Evaluate the formula with variables
+            try:
+                result_formula = eval(kpi_formula, {}, kpi_variables)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-                output_data = {'result': formula_data_list}
-                output_serializer = OutputSerializer(output_data, many=True)
-                return Response(output_serializer.data, status=status.HTTP_200_OK)
+            # Filter Raw objects based on layer and elements
+            if layer == 'site':
+                data = Raw.objects.filter(province__in=elements)
+            elif layer == 'city':
+                data = Raw.objects.filter(city__in=elements)
 
-        return Response({'message': 'something wrong'}, status=status.HTTP_400_BAD_REQUEST)
+            # Annotate the result of the formula
+            data = data.annotate(result=ExpressionWrapper(result_formula, output_field=fields.FloatField()))
+
+            # Serialize the results and return the response
+            result_serializer = RawSerializer(data, many=True)
+            return Response(result_serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Invalid input'}, status=status.HTTP_400_BAD_REQUEST)

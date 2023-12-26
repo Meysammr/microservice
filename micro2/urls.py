@@ -1,7 +1,6 @@
 from django.urls import path
-
-from .views import create_aggregations
+from .views import AggregationView
 
 urlpatterns = [
-    path('create-aggregations/', create_aggregations, name='create_aggregations')
+    path('aggregation/', AggregationView.as_view(), name='aggregation-view'),
 ]

@@ -84,7 +84,7 @@ DATABASES = {
     # }
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
+        "NAME": "microservice",
         "USER": "postgres",
         "PASSWORD": "meysammr",
         "HOST": "localhost",

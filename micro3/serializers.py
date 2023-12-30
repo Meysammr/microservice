@@ -3,7 +3,7 @@ from rest_framework import serializers
 from micro1.models import Raw
 
 
-class FormulaInputSerializer(serializers.Serializer):
+class InputSerializer(serializers.Serializer):
     layer = serializers.ChoiceField(choices=['site', 'city'])
     elements = serializers.ListField(child=serializers.CharField())
     kpi = serializers.CharField()

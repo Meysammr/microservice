@@ -3,14 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import F, ExpressionWrapper, fields
-from .serializers import FormulaInputSerializer, RawSerializer
+from .serializers import InputSerializer, RawSerializer
 from micro1.models import Raw
 
 
 class FormulaCalculation(APIView):
 
     def post(self, request, *args, **kwargs):
-        serializer = FormulaInputSerializer(data=request.data)
+        serializer = InputSerializer(data=request.data)
         if serializer.is_valid():
             layer = serializer.validated_data['layer']
             elements = serializer.validated_data.get('elements', [])

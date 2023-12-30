@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import import_csv
+from .views import RawDataAPIView
 
 urlpatterns = [
-    path('import-csv/', import_csv, name="import csv")
+    path('import-csv/', RawDataAPIView.as_view(), name="Raw_list"),
 ]

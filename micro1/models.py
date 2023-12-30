@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Raw(models.Model):
+    
     raw_id = models.UUIDField(default=uuid.uuid4, null=True, blank=True)
     city = models.CharField(max_length=200, null=True, blank=True)
     province = models.CharField(max_length=200, null=True, blank=True)
@@ -27,8 +28,5 @@ class Raw(models.Model):
     kpi_18 = models.FloatField(null=True, blank=True)
     kpi_19 = models.FloatField(null=True, blank=True)
     kpi_20 = models.FloatField(null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.city} - {self.province}'
 
 

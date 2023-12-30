@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from django.db.models import Sum, Max, Min, Avg
+# from django.db.models import Sum, Max, Min, Avg
 
 from micro1.models import Raw
 
